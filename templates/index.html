@@ -15,7 +15,7 @@
                 </h5>
                 <p class="card-text"><small class="text-muted">Курс уже начался</small></p>
                 <p class="card-text">{{ course.desc }}</p>
-                <a href="#" class="btn btn-primary">Подробнее</a>
+                <a href="{{ url_for('get_course', course_id=loop.index) }}" class="btn btn-primary">Подробнее</a>
             </div>
         </div>
     </div>
