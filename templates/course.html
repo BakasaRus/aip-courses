@@ -7,11 +7,11 @@
                  loading="lazy">
         </div>
         <div class="col-12 col-sm-6 col-lg-8">
-            <h1 class="display-5 fw-bold lh-1 mb-3">{{ course.name }}</h1>
+            <h1 class="display-5 fw-bold lh-1 mb-3">{{ course.name | upper }}</h1>
             {% if course.is_new %}
                 <p class="display-6"><span class="badge bg-primary">Новый курс</span></p>
             {% endif %}
-            <p>{{ course.start }} - {{ course.end }}</p>
+            <p>{{ course.start | datetime }} - {{ course.end | datetime }}</p>
             <p class="lead">{{ course.desc }}</p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                 <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Записаться на курс</button>
