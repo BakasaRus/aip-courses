@@ -1,4 +1,4 @@
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, request
 from datetime import datetime
 
 app = Flask(__name__)
@@ -42,6 +42,13 @@ courses = [
 @app.route('/')
 def homepage():  # put application's code here
     return render_template('index.html', title='Закрытое образование', courses=courses)
+
+
+@app.route('/search')
+def search():
+    text = request.args['text']
+    selected_courses = [course for course in courses if text in course['name'] or text in course['desc']]
+    return render_template('index.html', title='Результаты поиска', courses=selected_courses)
 
 
 @app.route('/about')
