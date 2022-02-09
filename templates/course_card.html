@@ -1,0 +1,17 @@
+<div class="card mb-3">
+    <img src="{{ course.img }}" class="card-img-top" alt="{{ course.name }}">
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ course.name }}
+            {% if course is new_course %}
+                <span class="badge bg-primary">Новый курс</span>
+            {% endif %}
+            {% if course.id is even %}
+                <span class="badge bg-warning">заЧётный курс</span>
+            {% endif %}
+        </h5>
+        <p class="card-text"><small class="text-muted">Курс уже начался</small></p>
+        <p class="card-text">{{ course.desc }}</p>
+        <a href="{{ url_for('get_course', course_id=course.id) }}" class="btn btn-primary">Подробнее</a>
+    </div>
+</div>
