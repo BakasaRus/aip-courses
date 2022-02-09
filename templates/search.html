@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Главная страница | {{ super() }}
+Результаты поиска по запросу "{{ text }}" | {{ super() }}
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-5">Список курсов</h1>
+<h1 class="mb-5">Результаты поиска по запросу "{{ text }}"</h1>
 <div class="row">
     {% for course in courses %}
     <div class="col-lg-4 col-md-6">

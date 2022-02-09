@@ -46,14 +46,14 @@ courses = [
 
 @app.route('/')
 def homepage():  # put application's code here
-    return render_template('index.html', title='Закрытое образование', page_title='Список курсов', courses=courses)
+    return render_template('index.html', courses=courses)
 
 
 @app.route('/search')
 def search():
     text = escape(request.args['text'])
     selected_courses = [course for course in courses if text in course['name'] or text in course['desc']]
-    return render_template('index.html', title='Результаты поиска', page_title=f'Результаты поиска по запросу "{text}"', courses=selected_courses)
+    return render_template('search.html', text=text, courses=selected_courses)
 
 
 @app.route('/about')
@@ -70,7 +70,7 @@ def get_courses():
 def get_course(course_id):
     if course_id >= len(courses):
         abort(404)
-    return render_template('course.html', title='Закрытое образование', course=courses[course_id - 1])
+    return render_template('course.html', course=courses[course_id - 1])
 
 
 @app.errorhandler(404)
