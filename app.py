@@ -33,7 +33,6 @@ courses = [
         'name': 'Введение в машинное обучение',
         'desc': 'Машинное обучение, его применение и совершенствование — это то, над чем трудятся многие лучшие умы современности.',
         'img': 'https://cdn.openedu.ru/f1367c/CACHE/images/cover/54eda2d1971ba38fd42e9c7afddf54e27f0b34fd/af28f10bf4a4454bfde701ae596c7f3d.png',
-        'is_new': False,
         'start': datetime.now(),
         'end': datetime.now(),
     }
@@ -63,6 +62,13 @@ def get_course(course_id):
 @app.template_filter('datetime')
 def datetime_format(value, format="%c"):
     return value.strftime(format)
+
+
+@app.template_test('new_course')
+def is_new(course):
+    if 'is_new' not in course:
+        return False
+    return course['is_new']
 
 
 if __name__ == '__main__':

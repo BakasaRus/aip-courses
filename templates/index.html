@@ -9,8 +9,11 @@
             <div class="card-body">
                 <h5 class="card-title">
                     {{ course.name }}
-                    {% if course.is_new %}
+                    {% if course is new_course %}
                         <span class="badge bg-primary">Новый курс</span>
+                    {% endif %}
+                    {% if loop.index is even %}
+                        <span class="badge bg-warning">заЧётный курс</span>
                     {% endif %}
                 </h5>
                 <p class="card-text"><small class="text-muted">Курс уже начался</small></p>
