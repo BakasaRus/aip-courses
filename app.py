@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 from datetime import datetime
 
 app = Flask(__name__)
@@ -56,6 +56,8 @@ def get_courses():
 
 @app.route('/courses/<int:course_id>')
 def get_course(course_id):
+    if course_id >= len(courses):
+        abort(404)
     return render_template('course.html', title='Закрытое образование', course=courses[course_id - 1])
 
 
