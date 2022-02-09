@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Страница не найдена (ошибка 404)</h1>
+    <p>
+        Нам очень жаль, но вы повернули не туда...
+        Попробуйте вернуться на <a href="{{ url_for('homepage') }}">главную страницу</a>.
+    </p>
+    <div class="text-center">
+        <img class="rounded" src="{{ url_for('static', filename='images/cat.jpg') }}" alt="Pretty cat"/>
+    </div>
+{% endblock %}

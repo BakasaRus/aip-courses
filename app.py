@@ -59,6 +59,11 @@ def get_course(course_id):
     return render_template('course.html', title='Закрытое образование', course=courses[course_id - 1])
 
 
+@app.errorhandler(404)
+def handle_404(error):
+    return render_template('404.html'), 404
+
+
 @app.template_filter('datetime')
 def datetime_format(value, format="%c"):
     return value.strftime(format)
