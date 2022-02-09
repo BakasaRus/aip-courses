@@ -25,7 +25,7 @@ courses = [
         'end': datetime.now(),
     },
     {
-        'id': 3,
+        'id': 4,
         'name': 'Модели и методы аналитической механики',
         'desc': 'В курсе рассматриваются подходы к составлению математических моделей динамических систем и методы их математической обработки.',
         'img': 'https://cdn.openedu.ru/f1367c/CACHE/images/cover/badge_J6JVOr2/ce39a073a96624c22ce5203d473a2969.png',
@@ -34,7 +34,7 @@ courses = [
         'end': datetime.now(),
     },
     {
-        'id': 4,
+        'id': 5,
         'name': 'Введение в машинное обучение',
         'desc': 'Машинное обучение, его применение и совершенствование — это то, над чем трудятся многие лучшие умы современности.',
         'img': 'https://cdn.openedu.ru/f1367c/CACHE/images/cover/54eda2d1971ba38fd42e9c7afddf54e27f0b34fd/af28f10bf4a4454bfde701ae596c7f3d.png',
@@ -68,9 +68,11 @@ def get_courses():
 
 @app.route('/courses/<int:course_id>')
 def get_course(course_id):
-    if course_id >= len(courses):
+    found_courses = [course for course in courses if course['id'] == course_id]
+    if not found_courses:
         abort(404)
-    return render_template('course.html', course=courses[course_id - 1])
+
+    return render_template('course.html', course=found_courses[0])
 
 
 @app.errorhandler(404)
