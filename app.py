@@ -87,6 +87,11 @@ def get_courses():
     return 'All my courses'
 
 
+@app.route('/courses/create')
+def create_course():
+    return render_template('create_course.html')
+
+
 @app.route('/courses/<int:course_id>')
 def get_course(course_id):
     found_courses = [course for course in courses if course['id'] == course_id]
