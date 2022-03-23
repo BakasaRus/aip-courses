@@ -1,4 +1,4 @@
-from flask import Flask, render_template, abort, request
+from flask import Flask, render_template, abort, request, redirect
 from markupsafe import escape
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -87,8 +87,19 @@ def get_courses():
     return 'All my courses'
 
 
-@app.route('/courses/create')
+@app.route('/courses/create', methods=['GET', 'POST'])
 def create_course():
+    if request.method == 'POST':
+        new_course = Course()
+        new_course.name = request.form.get('name')
+        new_course.description = request.form.get('description')
+        new_course.cover = request.form.get('cover')
+        new_course.is_new = request.form.get('is_new') is not None
+        new_course.date_start = datetime.fromisoformat(request.form.get('date_start'))
+        new_course.date_end = datetime.fromisoformat(request.form.get('date_end'))
+        db.session.add(new_course)
+        db.session.commit()
+        return redirect('/')
     return render_template('create_course.html')
 
 
