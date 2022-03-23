@@ -6,32 +6,40 @@
 
 {% block content %}
 <h1>Новый курс</h1>
+{% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
 <form action="{{ url_for('create_course') }}" method="POST">
+    {{ form.csrf_token }}
     <div>
-        <label for="name">Название курса</label>
-        <input type="text" id="name" name="name" required>
+        {{ form.name.label }}
+        {{ form.name() }}
     </div>
     <div>
-        <label for="description">Описание</label>
-        <textarea id="description" name="description" cols="30" rows="10" required></textarea>
+        {{ form.description.label }}
+        {{ form.description() }}
     </div>
     <div>
-        <label for="cover">Ссылка на обложку</label>
-        <input type="url" id="cover" name="cover" required>
+        {{ form.cover.label }}
+        {{ form.cover() }}
     </div>
     <div>
-        <label for="is_new">
-            <input type="checkbox" id="is_new" name="is_new">
-            Новый курс
-        </label>
+        {{ form.is_new() }}
+        {{ form.is_new.label }}
     </div>
     <div>
-        <label for="date_start">Дата начала</label>
-        <input type="datetime-local" id="date_start" name="date_start">
+        {{ form.date_start.label }}
+        {{ form.date_start() }}
     </div>
     <div>
-        <label for="date_end">Дата окончания</label>
-        <input type="datetime-local" id="date_end" name="date_end">
+        {{ form.date_end.label }}
+        {{ form.date_end() }}
     </div>
     <div>
         <button type="submit">Добавить</button>

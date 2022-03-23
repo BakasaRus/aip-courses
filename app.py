@@ -2,10 +2,16 @@ from flask import Flask, render_template, abort, request, redirect
 from markupsafe import escape
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from flask_wtf.csrf import CSRFProtect
+from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField
+from wtforms.validators import DataRequired, URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SECRET_KEY'] = 'ghsgh srth rt drtyu dtrfy ue608d r6th 36dr06dr48t 58'
 db = SQLAlchemy(app)
+csrf = CSRFProtect(app)
 
 
 courses = [
@@ -65,6 +71,15 @@ class Lesson(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 
 
+class CreateCourseForm(FlaskForm):
+    name = StringField(label='Название курса', validators=[DataRequired()])
+    description = TextAreaField(label='Описание', validators=[DataRequired()])
+    cover = URLField(label='Ссылка на обложку', validators=[DataRequired(), URL()])
+    is_new = BooleanField(label='Новый курс')
+    date_start = DateTimeLocalField(label='Дата начала')
+    date_end = DateTimeLocalField(label='Дата окончания')
+
+
 @app.route('/')
 def homepage():  # put application's code here
     return render_template('index.html', courses=courses)
@@ -89,7 +104,8 @@ def get_courses():
 
 @app.route('/courses/create', methods=['GET', 'POST'])
 def create_course():
-    if request.method == 'POST':
+    create_course_form = CreateCourseForm()
+    if create_course_form.validate_on_submit():
         new_course = Course()
         new_course.name = request.form.get('name')
         new_course.description = request.form.get('description')
@@ -100,7 +116,7 @@ def create_course():
         db.session.add(new_course)
         db.session.commit()
         return redirect('/')
-    return render_template('create_course.html')
+    return render_template('create_course.html', form=create_course_form)
 
 
 @app.route('/courses/<int:course_id>')
