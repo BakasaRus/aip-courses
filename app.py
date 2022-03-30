@@ -99,6 +99,7 @@ class CreateCourseForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = EmailField(label='Электронная почта', validators=[DataRequired()])
     password = PasswordField(label='Пароль', validators=[DataRequired()])
+    remember_me = BooleanField(label='Запомнить меня')
 
 
 @login_manager.user_loader
@@ -117,9 +118,10 @@ def login():
     if login_form.validate_on_submit():
         email = request.form.get('email')
         password = request.form.get('password')
+        remember_me = request.form.get('remember_me') is not None
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
-            login_user(user)
+            login_user(user, remember=remember_me)
             return redirect('/')
     return render_template('login.html', form=login_form)
 
