@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField, EmailField, PasswordField
 from wtforms.validators import DataRequired, URL
-from flask_login import LoginManager, UserMixin, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -107,7 +107,7 @@ def user_loader(user_id):
 
 
 @app.route('/')
-def homepage():  # put application's code here
+def homepage():
     return render_template('index.html', courses=courses)
 
 
@@ -137,17 +137,13 @@ def search():
     return render_template('search.html', text=text, courses=selected_courses)
 
 
-@app.route('/about')
-def about():
-    return 'All about me!'
-
-
 @app.route('/courses')
 def get_courses():
     return 'All my courses'
 
 
 @app.route('/courses/create', methods=['GET', 'POST'])
+@login_required
 def create_course():
     create_course_form = CreateCourseForm()
     if create_course_form.validate_on_submit():
