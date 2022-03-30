@@ -7,6 +7,7 @@ from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField, EmailField, PasswordField
 from wtforms.validators import DataRequired, URL
 from flask_login import LoginManager, UserMixin, login_user, logout_user
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -79,6 +80,12 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     nickname = db.Column(db.String(32), unique=True)
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
 
 class CreateCourseForm(FlaskForm):
     name = StringField(label='Название курса', validators=[DataRequired()])
@@ -111,7 +118,7 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
-        if user and user.password == password:
+        if user and user.check_password(password):
             login_user(user)
             return redirect('/')
     return render_template('login.html', form=login_form)
