@@ -27,14 +27,17 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Курсы</a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Программы</a>
+                        <a class="nav-link" href="#">{{ current_user.nickname }}</a>
                     </li>
+                    {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Сотрудничество</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">О проекте</a>
+                        {% if current_user.is_anonymous %}
+                        <a class="nav-link" href="{{ url_for('login') }}">Войти</a>
+                        {% else %}
+                        <a class="nav-link" href="{{ url_for('logout') }}">Выйти</a>
+                        {% endif %}
                     </li>
                 </ul>
                 <form class="d-flex" action="{{ url_for('search') }}">
