@@ -4,9 +4,9 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField
+from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField, EmailField, PasswordField
 from wtforms.validators import DataRequired, URL
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager, UserMixin, login_user
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
@@ -89,6 +89,11 @@ class CreateCourseForm(FlaskForm):
     date_end = DateTimeLocalField(label='Дата окончания')
 
 
+class LoginForm(FlaskForm):
+    email = EmailField(label='Электронная почта', validators=[DataRequired()])
+    password = PasswordField(label='Пароль', validators=[DataRequired()])
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
@@ -99,9 +104,17 @@ def homepage():  # put application's code here
     return render_template('index.html', courses=courses)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        if user and user.password == password:
+            login_user(user)
+            return redirect('/')
+    return render_template('login.html', form=login_form)
 
 
 @app.route('/search')
