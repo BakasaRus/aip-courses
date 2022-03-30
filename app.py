@@ -6,12 +6,14 @@ from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField
 from wtforms.validators import DataRequired, URL
+from flask_login import LoginManager, UserMixin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SECRET_KEY'] = 'ghsgh srth rt drtyu dtrfy ue608d r6th 36dr06dr48t 58'
 db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
+login_manager = LoginManager(app)
 
 
 courses = [
@@ -71,6 +73,13 @@ class Lesson(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
 
 
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    nickname = db.Column(db.String(32), unique=True)
+
+
 class CreateCourseForm(FlaskForm):
     name = StringField(label='Название курса', validators=[DataRequired()])
     description = TextAreaField(label='Описание', validators=[DataRequired()])
@@ -80,9 +89,19 @@ class CreateCourseForm(FlaskForm):
     date_end = DateTimeLocalField(label='Дата окончания')
 
 
+@login_manager.user_loader
+def user_loader(user_id):
+    return User.query.get(int(user_id))
+
+
 @app.route('/')
 def homepage():  # put application's code here
     return render_template('index.html', courses=courses)
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
 
 
 @app.route('/search')
