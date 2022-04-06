@@ -20,7 +20,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
 
 db = SQLAlchemy(app)
-db.create_all()
 
 csrf = CSRFProtect(app)
 login_manager = LoginManager(app)
@@ -57,6 +56,9 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+
+db.create_all()
 
 
 class CreateCourseForm(FlaskForm):
