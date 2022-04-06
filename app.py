@@ -1,10 +1,9 @@
 from flask import Flask, render_template, abort, request, redirect
 from markupsafe import escape
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from os import getenv
+from models import db, User, Lesson, Course
 from forms import csrf, LoginForm, CreateCourseForm
 
 app = Flask(__name__)
@@ -16,46 +15,12 @@ if db_url and db_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
 
-db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
-csrf.init_app(app)
-
-
-class Course(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(80), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    cover = db.Column(db.Text)
-    is_new = db.Column(db.Boolean, default=False)
-    date_start = db.Column(db.DateTime)
-    date_end = db.Column(db.DateTime)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    lessons = db.relationship('Lesson', backref='course')
-
-
-class Lesson(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(80), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    nickname = db.Column(db.String(32), unique=True)
-    courses = db.relationship('Course', backref='owner')
-
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
-
+db.app = app
+db.init_app(app)
 db.create_all()
+csrf.init_app(app)
 
 
 @login_manager.user_loader
