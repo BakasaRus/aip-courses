@@ -12,7 +12,7 @@
         </div>
         <div class="col-12 col-sm-6 col-lg-8">
             <h1 class="display-5 fw-bold lh-1 mb-3">{{ course.name | upper }}</h1>
-            {% if course is new_course %}
+            {% if course.is_new %}
                 <p class="display-6"><span class="badge bg-primary">Новый курс</span></p>
             {% endif %}
             <p>{{ course.start | datetime }} - {{ course.end | datetime }}</p>

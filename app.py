@@ -181,13 +181,6 @@ def datetime_format(value, format="%c"):
     return value.strftime(format)
 
 
-@app.template_test('new_course')
-def is_new(course):
-    if 'is_new' not in course:
-        return False
-    return course['is_new']
-
-
 if __name__ == '__main__':
     db.create_all()
     app.run()

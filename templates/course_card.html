@@ -3,7 +3,7 @@
     <div class="card-body">
         <h5 class="card-title">
             {{ course.name }}
-            {% if course is new_course %}
+            {% if course.is_new %}
                 <span class="badge bg-primary">Новый курс</span>
             {% endif %}
             {% if course.id is even %}
