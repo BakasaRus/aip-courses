@@ -2,13 +2,10 @@ from flask import Flask, render_template, abort, request, redirect
 from markupsafe import escape
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField, EmailField, PasswordField
-from wtforms.validators import DataRequired, URL
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import generate_password_hash, check_password_hash
 from os import getenv
+from forms import csrf, LoginForm, CreateCourseForm
 
 app = Flask(__name__)
 
@@ -20,9 +17,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
 
 db = SQLAlchemy(app)
-
-csrf = CSRFProtect(app)
 login_manager = LoginManager(app)
+
+csrf.init_app(app)
 
 
 class Course(db.Model):
@@ -59,21 +56,6 @@ class User(db.Model, UserMixin):
 
 
 db.create_all()
-
-
-class CreateCourseForm(FlaskForm):
-    name = StringField(label='Название курса', validators=[DataRequired()])
-    description = TextAreaField(label='Описание', validators=[DataRequired()])
-    cover = URLField(label='Ссылка на обложку', validators=[DataRequired(), URL()])
-    is_new = BooleanField(label='Новый курс')
-    date_start = DateTimeLocalField(label='Дата начала', format='%Y-%m-%dT%H:%M')
-    date_end = DateTimeLocalField(label='Дата окончания', format='%Y-%m-%dT%H:%M')
-
-
-class LoginForm(FlaskForm):
-    email = EmailField(label='Электронная почта', validators=[DataRequired()])
-    password = PasswordField(label='Пароль', validators=[DataRequired()])
-    remember_me = BooleanField(label='Запомнить меня')
 
 
 @login_manager.user_loader
