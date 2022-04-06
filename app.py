@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.csrf import CSRFProtect
 from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTimeLocalField, EmailField, PasswordField
 from wtforms.validators import DataRequired, URL
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -25,6 +25,7 @@ class Course(db.Model):
     is_new = db.Column(db.Boolean, default=False)
     date_start = db.Column(db.DateTime)
     date_end = db.Column(db.DateTime)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     lessons = db.relationship('Lesson', backref='course')
 
 
@@ -40,6 +41,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     nickname = db.Column(db.String(32), unique=True)
+    courses = db.relationship('Course', backref='owner')
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -53,8 +55,8 @@ class CreateCourseForm(FlaskForm):
     description = TextAreaField(label='Описание', validators=[DataRequired()])
     cover = URLField(label='Ссылка на обложку', validators=[DataRequired(), URL()])
     is_new = BooleanField(label='Новый курс')
-    date_start = DateTimeLocalField(label='Дата начала')
-    date_end = DateTimeLocalField(label='Дата окончания')
+    date_start = DateTimeLocalField(label='Дата начала', format='%Y-%m-%dT%H:%M')
+    date_end = DateTimeLocalField(label='Дата окончания', format='%Y-%m-%dT%H:%M')
 
 
 class LoginForm(FlaskForm):
@@ -119,6 +121,7 @@ def create_course():
         new_course.is_new = request.form.get('is_new') is not None
         new_course.date_start = datetime.fromisoformat(request.form.get('date_start'))
         new_course.date_end = datetime.fromisoformat(request.form.get('date_end'))
+        new_course.owner_id = current_user.id
         db.session.add(new_course)
         db.session.commit()
         return redirect('/')
