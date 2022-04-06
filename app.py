@@ -12,13 +12,16 @@ from os import getenv
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
+
 db_url = getenv('DATABASE_URL', 'sqlite:///db.sqlite')
 if db_url and db_url.startswith('postgres://'):
     db_url = db_url.replace('postgres://', 'postgresql://', 1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
 db = SQLAlchemy(app)
+db.create_all()
+
 csrf = CSRFProtect(app)
 login_manager = LoginManager(app)
 
@@ -151,5 +154,4 @@ def datetime_format(value, format="%c"):
 
 
 if __name__ == '__main__':
-    db.create_all()
     app.run()
