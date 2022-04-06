@@ -8,10 +8,16 @@ from wtforms import StringField, TextAreaField, URLField, BooleanField, DateTime
 from wtforms.validators import DataRequired, URL
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import generate_password_hash, check_password_hash
+from os import getenv
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-app.config['SECRET_KEY'] = 'ghsgh srth rt drtyu dtrfy ue608d r6th 36dr06dr48t 58'
+
+db_url = getenv('DATABASE_URL', 'sqlite:///db.sqlite')
+if db_url and db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+app.config['SECRET_KEY'] = getenv('APP_SECRET_KEY')
 db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
 login_manager = LoginManager(app)
